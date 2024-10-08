@@ -1,11 +1,6 @@
-from PID import PID
 from ONNX_API import YOLOV5
 import cv2
-import serial
-import json
-import time
-import random
-import threading
+
 
 
 CLASSES=['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light',
