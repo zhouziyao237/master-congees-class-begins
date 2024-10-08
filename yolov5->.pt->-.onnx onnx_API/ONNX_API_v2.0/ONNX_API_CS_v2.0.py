@@ -18,49 +18,6 @@ CLASSES=['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', '
         'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear',
         'hair drier', 'toothbrush'] #coco80类别
 
-Servo_i = False
-yaw_i = 0
-pitch_i = 0
-
-
-def send_json():
-    global Servo_i, yaw_i, pitch_i
-    while True:
-        if Servo_i == False:
-            try:
-                data = data = {
-                    "pitch:": pitch_i,
-                    "yaw:": yaw_i
-                }
-                json_str = json.dumps(data)
-
-                ser.write(json_str.encode())
-
-                print("JSON data sent:", json_str.encode())
-                # 等待接收确认消息
-                response = ser.readline().decode().strip()
-                print("Received confirmation message:", response)
-
-            except Exception as e:
-                print("Error sending JSON data:", str(e))
-
-            Servo_i = True
-
-def map_value(i):
-    # 定义原始范围和目标范围
-    original_min = 0
-    original_max = 60
-    target_min = -30
-    target_max = 30
-
-    # 计算比例因子
-    scale = (target_max - target_min) / (original_max - original_min)
-
-    # 应用线性变换
-    mapped_value = target_min + scale * (i - original_min)
-
-    return mapped_value
-
 def yolov5_run(video_ID):
 
     cap = cv2.VideoCapture(video_ID)
@@ -107,13 +64,6 @@ def yolov5_run(video_ID):
                 print(box, score, cl)
                 print("fps: ", fps)
                 cv2.imshow('frame', cs_img)
-                if Servo_i == True:
-                    # yaw_i = random.randint(-90, 90)
-                    # pitch_i = random.randint(-45, 45)
-                    pitch_i = -servo_x
-                    yaw_i = servo_y
-                    Servo_i = False
-                
 
                                                                                                                                                                        
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -125,20 +75,7 @@ def yolov5_run(video_ID):
 if __name__=="__main__":
     onnx_path='./weights/yolov5s.onnx'
     model=YOLOV5(onnx_path, "result.txt", CLASSES)
-    #清空输出结果文件
-    
-    ser = serial.Serial('COM6', 115200, timeout=1)
 
-    thread2 = threading.Thread(target=yolov5_run, args=(0,))
-    thread1 = threading.Thread(target=send_json)
+    yolov5_run()
 
-    # 启动线程
-    thread1.start()
-    thread2.start()
-
-    # 等待所有线程完成
-    thread1.join()
-    thread2.join()
-
-    ser.close()
 
