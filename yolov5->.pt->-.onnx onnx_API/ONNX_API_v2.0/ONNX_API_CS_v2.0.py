@@ -42,22 +42,6 @@ def yolov5_run(video_ID):
                 output,or_img,size=model.inference_video(img)
                 outbox=model.filter_box(output,0.3,0.2)#此处为筛选识别信息，前者为可信度，后者为IOU thres
                 box, score, cl, cs_img = model.draw(image = or_img, box_data = outbox, size = size, return_class = True, WRP = True)
-                
-                if cl == 0:
-                    width, height = img.shape[:2]
-                    
-                    top, left, right, bottom = box
-
-                    cx = int(right / 2)
-                    cy = int(bottom / 2)
-
-                    servo_x = (cx/640) * 60
-                    servo_y = (cy/480) * 60
-
-                    servo_x = round(map_value(servo_x), 0)
-                    servo_y = round(map_value(servo_x), 0)
-                    print("servo_x: ", servo_x)
-                    print("servo_y: ", servo_y)
 
 
             if frame_count % frame_interval == 0:
